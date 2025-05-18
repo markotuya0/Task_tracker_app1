@@ -13,11 +13,154 @@
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    
+    <style>
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background-color: #f8f9fa;
+      }
+      
+      .navbar-brand {
+        font-weight: bold;
+        font-size: 1.5rem;
+      }
+      
+      .main-content {
+        flex: 1;
+      }
+      
+      .task-card {
+        transition: transform 0.2s;
+        margin-bottom: 1rem;
+      }
+      
+      .task-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      }
+      
+      .task-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+      
+      .completed-task {
+        text-decoration: line-through;
+        color: #6c757d;
+      }
+      
+      .overdue {
+        border-left: 4px solid #dc3545;
+      }
+      
+      .due-today {
+        border-left: 4px solid #ffc107;
+      }
+      
+      .upcoming {
+        border-left: 4px solid #0d6efd;
+      }
+      
+      .footer {
+        margin-top: auto;
+        padding: 1rem 0;
+        background-color: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+      }
+      
+      @media (max-width: 768px) {
+        .task-actions {
+          flex-direction: column;
+          gap: 0.25rem;
+        }
+      }
+    </style>
   </head>
 
   <body>
-    <%= yield %>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <%= link_to "Task Tracker", root_path, class: "navbar-brand" %>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <% if defined?(user_signed_in?) && user_signed_in? %>
+              <li class="nav-item">
+                <%= link_to "Dashboard", dashboard_path, class: "nav-link #{current_page?(dashboard_path) ? 'active' : ''}" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Tasks", tasks_path, class: "nav-link #{current_page?(tasks_path) ? 'active' : ''}" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Completed", completed_tasks_path, class: "nav-link #{current_page?(completed_tasks_path) ? 'active' : ''}" %>
+              </li>
+            <% else %>
+              <li class="nav-item">
+                <%= link_to "Home", root_path, class: "nav-link #{current_page?(root_path) ? 'active' : ''}" %>
+              </li>
+            <% end %>
+          </ul>
+          <ul class="navbar-nav">
+            <% if defined?(user_signed_in?) && user_signed_in? %>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-user-circle"></i> <%= current_user.email %>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                  <li><%= link_to "Edit Profile", edit_user_registration_path, class: "dropdown-item" %></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "dropdown-item" %></li>
+                </ul>
+              </li>
+            <% else %>
+              <li class="nav-item">
+                <span class="nav-link">Setup Mode</span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="main-content py-4">
+      <div class="container">
+        <% if notice %>
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= notice %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% end %>
+        
+        <% if alert %>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= alert %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% end %>
+        
+        <%= yield %>
+      </div>
+    </div>
+    
+    <footer class="footer text-center">
+      <div class="container">
+        <p class="text-muted mb-0">&copy; <%= Date.today.year %> Task Tracker App</p>
+      </div>
+    </footer>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

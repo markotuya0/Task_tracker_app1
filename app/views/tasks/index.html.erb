@@ -1,0 +1,66 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Tasks</h1>
+  <% unless @setup_mode %>
+    <%= link_to new_task_path, class: "btn btn-primary" do %>
+      <i class="fas fa-plus"></i> New Task
+    <% end %>
+  <% end %>
+</div>
+
+<% if @setup_mode %>
+  <div class="alert alert-warning">
+    <h4>Setup Mode</h4>
+    <p>The application is currently in setup mode. Please complete the following steps:</p>
+    <ol>
+      <li>Run <code>rbenv exec bundle exec rails generate devise:install</code></li>
+      <li>Run <code>rbenv exec bundle exec rails db:migrate</code></li>
+      <li>Restart your Rails server</li>
+    </ol>
+  </div>
+<% else %>
+  <% if @tasks.empty? %>
+    <div class="text-center py-5">
+      <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+      <h3>No tasks yet</h3>
+      <p class="text-muted">Create your first task to get started</p>
+      <%= link_to "Create Task", new_task_path, class: "btn btn-primary mt-2" %>
+    </div>
+  <% else %>
+    <% if @overdue_tasks.any? %>
+      <div class="mb-4">
+        <h3 class="text-danger"><i class="fas fa-exclamation-circle"></i> Overdue</h3>
+        <div class="row">
+          <% @overdue_tasks.each do |task| %>
+            <div class="col-md-6 col-lg-4">
+              <%= render task %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+    
+    <div class="mb-4">
+      <h3><i class="fas fa-calendar-day"></i> Tasks</h3>
+      <div class="row">
+        <% @tasks.each do |task| %>
+          <div class="col-md-6 col-lg-4">
+            <%= render task %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    
+    <% if @upcoming_tasks.any? %>
+      <div class="mb-4">
+        <h3 class="text-primary"><i class="fas fa-calendar"></i> Upcoming</h3>
+        <div class="row">
+          <% @upcoming_tasks.each do |task| %>
+            <div class="col-md-6 col-lg-4">
+              <%= render task %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

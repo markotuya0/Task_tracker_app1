@@ -1,0 +1,83 @@
+<h1>Task Tracker App</h1>
+
+<p>Welcome to the Task Tracker App!</p>
+
+<% if defined?(current_user) && current_user %>
+  <h2>Your Dashboard</h2>
+  
+  <div class="stats-container">
+    <div class="stat-card">
+      <h3>Total Tasks</h3>
+      <p class="stat-number"><%= @total_tasks %></p>
+    </div>
+    
+    <div class="stat-card">
+      <h3>Completed</h3>
+      <p class="stat-number"><%= @completed_count %></p>
+    </div>
+    
+    <div class="stat-card">
+      <h3>Completion Rate</h3>
+      <p class="stat-number"><%= @completion_rate %>%</p>
+    </div>
+  </div>
+
+  <% if @overdue_tasks.any? %>
+    <div class="task-section overdue">
+      <h3>Overdue Tasks</h3>
+      <ul>
+        <% @overdue_tasks.each do |task| %>
+          <li><%= link_to task.title, task_path(task) %> - Due: <%= task.due_date.strftime("%b %d") %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if @today_tasks.any? %>
+    <div class="task-section today">
+      <h3>Today's Tasks</h3>
+      <ul>
+        <% @today_tasks.each do |task| %>
+          <li><%= link_to task.title, task_path(task) %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if @upcoming_tasks.any? %>
+    <div class="task-section upcoming">
+      <h3>Upcoming Tasks</h3>
+      <ul>
+        <% @upcoming_tasks.each do |task| %>
+          <li><%= link_to task.title, task_path(task) %> - Due: <%= task.due_date.strftime("%b %d") %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if @completed_tasks.any? %>
+    <div class="task-section completed">
+      <h3>Recently Completed</h3>
+      <ul>
+        <% @completed_tasks.each do |task| %>
+          <li><%= link_to task.title, task_path(task) %> - Completed: <%= time_ago_in_words(task.updated_at) %> ago</li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+<% else %>
+  <div class="setup-message">
+    <h2>Setup Required</h2>
+    <p>The application needs to be properly initialized. Please follow these steps:</p>
+    <ol>
+      <li>Run <code>rbenv exec bundle exec rails generate devise:install</code></li>
+      <li>Run <code>rbenv exec bundle exec rails db:migrate</code></li>
+      <li>Restart your Rails server</li>
+    </ol>
+  </div>
+<% end %>
+
+<div class="actions">
+  <%= link_to "View All Tasks", tasks_path, class: "btn btn-primary" if defined?(tasks_path) %>
+  <%= link_to "Add New Task", new_task_path, class: "btn btn-success" if defined?(new_task_path) %>
+</div>
